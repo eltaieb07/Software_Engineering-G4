@@ -5,18 +5,58 @@ import javax.swing.*;
 
 public class PointObject extends JFrame {
 	
+	/*Edtited by Eltaieb*/
+	
+	private int pointID;
+	private String pointNumber;
 	private double pointX;
 	private double pointY;
 	
 	public PointObject() {
 		
+		/*Edtited by Eltaieb*/
+		/**
+		 * class constructor
+		 * pointID
+		 * pointNumber
+		 */
+		this.pointID = 0;
+		this.pointNumber = "";
 		this.pointX = 0;
 		this.pointY = 0;
 	}
 	
-	public PointObject(double X, double Y) {
+	/*Edtited by Eltaieb*/
+	/**
+	 * class constructor method
+	 * @param id point ID
+	 * @param NR point number
+	 * @param X x coordinate
+	 * @param Y y coordinate
+	 */
+	public PointObject(int id, String NMBR, double X, double Y) {
+		this.pointID = id;
 		this.pointX = X;
 		this.pointY = Y;
+		this.pointNumber = NMBR;
+	}
+	
+	/*Edtited by Eltaieb*/
+	// getter and setter methods for pointID & pointNumber
+	public int getPointID() {
+		return pointID;
+	}
+	
+	public void setPointID(int pointID) {
+		this.pointID = pointID;
+	}
+	
+	public String getPointNumber() {
+		return pointNumber;
+	}
+	
+	public String setPointNumber(String poitNumber) {
+		this.pointNumber = pointNumber;
 	}
 	
 	public double getPointX() {
