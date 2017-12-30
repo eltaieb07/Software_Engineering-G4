@@ -14,6 +14,7 @@ public class ShapeDrawing extends JFrame{
 	
 	
 	MyPanel panel;
+	DatabaseConnectivity dc;
 	private JPanel p;
 	private JPanel p2;
 	private JMenuBar menubar;
@@ -28,7 +29,9 @@ public class ShapeDrawing extends JFrame{
 	public JButton polygon;
 	public JButton select;
 	public JButton clear;
-	public static int current_shape;
+	public JButton moveUp, moveDown, moveLeft, moveRight;
+	public JButton delete = new JButton();
+	public static int current_shape; public static String moveID = "z";
 	
 	//private static JFrame f;
 	public ShapeDrawing(){
@@ -69,7 +72,7 @@ public class ShapeDrawing extends JFrame{
         p.setLayout(null);
         
         tree = new JTree();
-        tree.setBounds(10, 36, 100, 150);
+        tree.setBounds(20, 11, 100, 201);
         p.add(tree);
         getContentPane().add(p2);
         //p2.setLayout(new BoxLayout(p2, BoxLayout.X_AXIS));
@@ -88,12 +91,14 @@ public class ShapeDrawing extends JFrame{
 		    public void actionPerformed(ActionEvent ev) {
 	            FileHandling.ReadFile();
 	            panel.update_drawing();
+	            label.setText("Shapes loaded from File!");
 		    }
 		});
 		
 		save_to.addActionListener(new ActionListener() {
 		    public void actionPerformed(ActionEvent ev) {
 	            FileHandling.WriteFile();
+	            label.setText("Shapes saved into File!");
 	            
 		    }
 		});
@@ -184,26 +189,73 @@ public class ShapeDrawing extends JFrame{
 		p2.add(polygon);
 		polygon.setEnabled(false);
 	
-		select = new JButton();
-		select.setBounds(350, 7, 35, 35);
-		select.setBackground(Color.WHITE);
-		ImageIcon icon_select = new ImageIcon("..\\Drawing\\icons\\select_curso.png");
-		select.setIcon(icon_select);
-		select.setToolTipText("Select Feature");
-		select.addActionListener(ac);
-		p2.add(select);
-		
 		clear = new JButton();
-		clear.setBounds(400, 7, 35, 35);
+		clear.setBounds(350, 7, 35, 35);
 		clear.setBackground(Color.WHITE);
 		ImageIcon icon_clear = new ImageIcon("..\\Drawing\\icons\\Clear.png");
 		clear.setIcon(icon_clear);
 		clear.setToolTipText("Clear Display");
 		clear.addActionListener(ac);
-		p2.add(clear);
+		p2.add(clear);	
+	
+		select = new JButton();
+		select.setBounds(400, 7, 35, 35);
+		select.setBackground(Color.WHITE);
+		ImageIcon icon_select = new ImageIcon("..\\Drawing\\icons\\select.jpg");
+		select.setIcon(icon_select);
+		select.setToolTipText("Select Feature");
+		select.addActionListener(ac);
+		p2.add(select);
+		select.setEnabled(false);
+		
+		
+		moveUp = new JButton();
+		moveUp.setBounds(450, 7, 35, 35);
+		moveUp.setBackground(Color.WHITE);
+		ImageIcon icon_moveUp = new ImageIcon("..\\Drawing\\icons\\up.jpg");
+		moveUp.setIcon(icon_moveUp);
+		moveUp.setToolTipText("Move Up");
+		moveUp.addActionListener(ac);
+		p2.add(moveUp);
+		
+		moveDown = new JButton();
+		moveDown.setBounds(500, 7, 35, 35);
+		moveDown.setBackground(Color.WHITE);
+		ImageIcon icon_moveDown = new ImageIcon("..\\Drawing\\icons\\down.jpg");
+		moveDown.setIcon(icon_moveDown);
+		moveDown.setToolTipText("Move Down");
+		moveDown.addActionListener(ac);
+		p2.add(moveDown);
+		
+		moveRight = new JButton();
+		moveRight.setBounds(550, 7, 35, 35);
+		moveRight.setBackground(Color.WHITE);
+		ImageIcon icon_moveRight = new ImageIcon("..\\Drawing\\icons\\right.jpg");
+		moveRight.setIcon(icon_moveRight);
+		moveRight.setToolTipText("Move Right");
+		moveRight.addActionListener(ac);
+		p2.add(moveRight);
+		
+		moveLeft = new JButton();
+		moveLeft.setBounds(600, 7, 35, 35);
+		moveLeft.setBackground(Color.WHITE);
+		ImageIcon icon_moveLeft = new ImageIcon("..\\Drawing\\icons\\left.jpg");
+		moveLeft.setIcon(icon_moveLeft);
+		moveLeft.setToolTipText("Move Left");
+		moveLeft.addActionListener(ac);
+		p2.add(moveLeft);
+
+	    delete.setBounds(650, 7, 35, 35);
+	    delete.setBackground(Color.WHITE);
+		ImageIcon icon_delete = new ImageIcon("..\\Drawing\\icons\\delete.png");
+		delete.setIcon(icon_delete);
+		delete.setToolTipText("Delete Selected Object");
+		delete.addActionListener(ac);
+		p2.add(delete);
+	    p2.add(delete);
          
 	     label = new JLabel();
-	     label.setBounds(450, 7, 400, 35);
+	     label.setBounds(700, 7, 400, 35);
 	     p2.add(label);
 	     label.setText("Editing Stopped...");
 	  
@@ -244,20 +296,41 @@ public class ShapeDrawing extends JFrame{
 	          if (actionEvent.getSource() == open){
 	        	  FileHandling.ReadFile();
 		          panel.update_drawing();
-		          label.setText("Shapes loaded from File!");
+		          label.setText("Shapes loaded from Database!");
 	          }
 	          if (actionEvent.getSource() == save){
 	        	  FileHandling.WriteFile();
-	        	  label.setText("Shapes Saved into File!");
+	        	  //DatabaseConnectivity.saveToDb();
+	        	  label.setText("Shapes Saved into Database!");
 	          }
 	          if (actionEvent.getSource() == select){
 	        	  label.setText("Click on the shape to select");
 	        	  current_shape = 10;
 	          }
+	          if (actionEvent.getSource() == moveUp){
+	        	  moveID = "up";
+	        	  panel.move();  
+	          }
+	          if (actionEvent.getSource() == moveDown){
+	        	  moveID = "down";
+	        	  panel.move();
+	          }
+	          if (actionEvent.getSource() == moveLeft){
+	        	  moveID = "left";
+	        	  panel.move();
+	          }
+	          if (actionEvent.getSource() == moveRight){
+	        	  moveID = "right";
+	        	  panel.move();
+	          }
+	          if (actionEvent.getSource() == delete){
+	        	  panel.delete();
+	          }
 	          
 	      }
 	};
 	private JTree tree;
+	
 	
 	class Listener implements ActionListener
 	{
@@ -293,6 +366,13 @@ public class ShapeDrawing extends JFrame{
 				point.setEnabled(true);
 				label.setText("Editing Started...");
 			}
+			if (select.isEnabled()){
+				select.setEnabled(false);
+				
+			}
+			else{
+				select.setEnabled(true);
+			}
 			
 		}
 		
@@ -303,5 +383,6 @@ public class ShapeDrawing extends JFrame{
 		
 		new ShapeDrawing();
     }
+
 }
 

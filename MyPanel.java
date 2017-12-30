@@ -6,13 +6,12 @@ import java.awt.*;
 import java.awt.event.MouseAdapter;
 import java.awt.event.MouseEvent;
 import java.awt.event.MouseMotionAdapter;
+import java.awt.geom.AffineTransform;
 import java.awt.geom.Line2D;
 import java.awt.geom.Point2D;
 import java.awt.geom.Rectangle2D;
 import java.awt.geom.Rectangle2D.Double;
 import java.awt.geom.Path2D;
-import java.awt.Graphics;
-import java.awt.Graphics2D;
 
 
 public class MyPanel extends JPanel {
@@ -20,6 +19,7 @@ public class MyPanel extends JPanel {
 	public static ArrayList<Point> points = new ArrayList<Point>();
 	public static ArrayList<Line2D.Double> lines = new ArrayList<Line2D.Double>();
 	public static ArrayList<Rectangle2D.Double> rectangles = new ArrayList<Rectangle2D.Double>();
+	public static List<ShapeItems> shapes = new ArrayList<ShapeItems>();
 	private Path2D currentShape;
     public static List<Path2D> polygons = new ArrayList<Path2D>();
     private Point lastPoint;
@@ -29,7 +29,8 @@ public class MyPanel extends JPanel {
 	Point startDrag_line, endDrag_line;    // These points are used to visualise the line during drawing/dragging.
 	Point startPoint , endPoint = null;  // These points are for start and end point of line.
 	Point pt = null;   // point for selection
-	
+	ShapeItems selected = null;
+	Color default_Color = Color.BLACK;
 	
 	public MyPanel(){
 	
@@ -39,6 +40,7 @@ public class MyPanel extends JPanel {
 				//System.out.println("Mouse Pressed at: "+e.getPoint());
 				if (ShapeDrawing.current_shape == 1){
 					points.add(new Point(e.getX() , e.getY()));
+					shapes.add(new ShapeItems("point", new Point(e.getX() , e.getY()) , default_Color));
 					repaint();
 				}
 				else if (ShapeDrawing.current_shape == 2) {
@@ -65,19 +67,55 @@ public class MyPanel extends JPanel {
 	                    } else if (e.getClickCount() == 2) {
 	                        currentShape.closePath();
 	                        polygons.add(currentShape);
+	                        shapes.add(new ShapeItems("polygon", currentShape , default_Color));
 	                        currentShape = null;
 	                        lastPoint = null;
 	                        repaint();
 	                    }
 	                   
 	                }
-				else if (ShapeDrawing.current_shape == 10){
-					
+				else if (ShapeDrawing.current_shape == 10){     
+					Color old_color= null;
 					pt = new Point(e.getX(),e.getY());
-					repaint();
-					
+					/*for (ShapeItems item : shapes) {              //This is for changing the color and not to be used here in this block
+						
+                        if (!item.getName().equals("point") && item.getShape().contains(pt)) {
+                        	old_color = item.getColor();
+                            item.setColor(Color.CYAN);
+                            //System.out.println(Color.CYAN);
+                        }
+                        else{
+                        	item.setColor(item.getColor());
+                        }
+                    }
+                    repaint();*/
+					for (ShapeItems item : shapes) {              //This is for changing the color and not to be used here in this block
+                    	if(item.getName().equals("rectangle") || item.getName().equals("polygon")){
+                    		if (item.getShape().contains((Point2D)pt)) {
+                    			selected = item;
+                    			break;
+                    		}
+                        }
+                        else if (item.getName().equals("line") && ((Line2D.Double) item.getShape()).ptLineDist(pt)<5){
+                        	selected = item;
+                        	break;
+
+                        }
+                        else if (item.getName().equals("point") && item.getPoint().distance(pt)<6){
+                        	selected = item;
+                        	break;
+                        }
+                        else{
+                        	selected = null;
+                        }
+
+                    }
+                    repaint();
+						
 					
 				}
+					
+
 				else if (ShapeDrawing.rectangle.isEnabled()){
 					ShapeDrawing.label.setText("Please select a shape from toolbar!");
 				}
@@ -87,6 +125,7 @@ public class MyPanel extends JPanel {
 				if (ShapeDrawing.current_shape == 2) {
 					endPoint = e.getPoint();
 					lines.add(new Line2D.Double(startPoint,endPoint));
+					shapes.add(new ShapeItems("line", new Line2D.Double(startPoint,endPoint),default_Color));
 					startDrag_line = null;
 					endDrag_line = null;
 					repaint();
@@ -97,8 +136,8 @@ public class MyPanel extends JPanel {
 					
 					MyRectangle rect = new MyRectangle(x,y,dx,dy);
 					Shape r = rect.makeRectangle();//new Rectangle(Math.min(x, dx), Math.min(y, dy), Math.abs(x - dx), Math.abs(y - dy));
-					
-					rectangles.add((Double) r);
+					shapes.add(new ShapeItems("rectangle", r,default_Color));
+					//rectangles.add( r);
 					//addRectangle(rect);
 					startDrag_rect = null;
 			        endDrag_rect = null;
@@ -159,13 +198,157 @@ public class MyPanel extends JPanel {
 		lines.clear();
 		rectangles.clear();
 		polygons.clear();
+		shapes.clear();
 
 		repaint();
 	}
 	public void update_drawing(){
 		repaint();
 	}
-	
+	public void delete(){
+		for (Iterator<ShapeItems> iter = shapes.iterator() ; iter.hasNext();){
+			
+			if (selected!=null && iter.next().equals(selected)){
+
+				iter.remove();
+				break;
+			}
+			iter.next();
+		}
+		repaint();
+	}
+
+	public void move(){
+		if (selected != null){
+			System.out.println(ShapeDrawing.moveID);
+			if (selected.getName() == "point"){
+				Point p = null;
+				switch (ShapeDrawing.moveID){
+					case "up":
+						p = (Point) selected.getPoint();
+						//p.translate(p.x, p.y-10);
+						p.setLocation(p.x , p.y-10);
+						pt.setLocation(pt.x, pt.y-10);
+						selected.setPoint(p);
+						break;
+					case "down":
+						p = (Point) selected.getPoint();
+						p.setLocation(p.x, p.y+10);
+						pt.setLocation(pt.x, pt.y+10);
+						selected.setPoint(p);
+						break;
+					case "right":
+						p = (Point)selected.getPoint();
+						p.setLocation(p.x+10, p.y);
+						pt.setLocation(pt.x+10, pt.y);
+						selected.setPoint(p);
+						break;
+					case "left":
+						p = (Point) selected.getPoint();
+						p.setLocation(p.x-10, p.y);
+						pt.setLocation(pt.x-10, pt.y);
+						selected.setPoint(p);
+						break;
+					default:
+						selected.setPoint(selected.getPoint());
+				}
+				repaint();
+			}
+			else if (selected.getName() == "line"){
+				Line2D.Double l = null;
+				switch (ShapeDrawing.moveID){
+					case "up":
+						l = (Line2D.Double) selected.getShape();
+						l.setLine(l.getX1(), l.getY1()-10, l.getX2(), l.getY2()-10);
+						pt.setLocation(pt.x, pt.y-10);
+						selected.setShape(l);
+						break;
+					case "down":
+						l = (Line2D.Double) selected.getShape();
+						l.setLine(l.getX1(), l.getY1()+10, l.getX2(), l.getY2()+10);
+						pt.setLocation(pt.x, pt.y+10);
+						selected.setShape(l);
+						break;
+					case "right":
+						l = (Line2D.Double) selected.getShape();
+						l.setLine(l.getX1()+10, l.getY1(), l.getX2()+10, l.getY2());
+						pt.setLocation(pt.x+10, pt.y);
+						selected.setShape(l);
+						break;
+					case "left":
+						l = (Line2D.Double) selected.getShape();
+						l.setLine(l.getX1()-10, l.getY1(), l.getX2()-10, l.getY2());
+						pt.setLocation(pt.x-10, pt.y);
+						selected.setShape(l);
+						break;
+					default:
+						selected.setShape(selected.getShape());
+				}
+				repaint();
+			}
+			else if (selected.getName() == "rectangle"){
+				Rectangle2D.Double r = null;
+				switch (ShapeDrawing.moveID){
+				case "up":
+					r = (Rectangle2D.Double) selected.getShape();
+					r.setFrame(r.getX(), r.getY()-10, r.getWidth(), r.getHeight());
+					pt.setLocation(pt.x, pt.y-10);
+					selected.setShape(r);
+					break;
+				case "down":
+					r = (Rectangle2D.Double) selected.getShape();
+					r.setFrame(r.getX(), r.getY()+10, r.getWidth(), r.getHeight());
+					pt.setLocation(pt.x, pt.y+10);
+					selected.setShape(r);
+					break;
+				case "right":
+					r = (Rectangle2D.Double) selected.getShape();
+					r.setFrame(r.getX()+10, r.getY(), r.getWidth(), r.getHeight());
+					pt.setLocation(pt.x+10, pt.y);
+					selected.setShape(r);
+					break;
+				case "left":
+					r = (Rectangle2D.Double) selected.getShape();
+					r.setFrame(r.getX()-10, r.getY(), r.getWidth(), r.getHeight());
+					pt.setLocation(pt.x-10, pt.y);
+					selected.setShape(r);
+					break;
+				default:
+					selected.setShape(selected.getShape());
+				}
+				repaint();
+			}
+			else if (selected.getName() == "polygon"){
+				AffineTransform at = new AffineTransform();
+		    	at.translate(0, 0);
+				switch (ShapeDrawing.moveID){
+					case "up":
+						at.translate(0, -10);
+						pt.setLocation(pt.x, pt.y-10);
+						break;
+					case "down":
+						at.translate(0, 10);
+						pt.setLocation(pt.x, pt.y+10);
+						break;
+					case "right":
+						at.translate(10,0);
+						pt.setLocation(pt.x+10, pt.y);
+						break;
+					case "left":
+						at.translate(-10,0);
+						pt.setLocation(pt.x-10, pt.y);
+						break;
+				}
+				repaint();
+				selected.setShape(at.createTransformedShape(selected.getShape()));
+				
+			}
+		}
+		else{
+			ShapeDrawing.label.setText("Please select the object first using Select toolbar");
+		}
+
+	}	
 	public void paint(Graphics g){
 		Graphics2D g2 = (Graphics2D) g;
 		Graphics2D g1 = (Graphics2D) g;  //for rendering of selected objects
@@ -186,7 +369,7 @@ public class MyPanel extends JPanel {
 		g.setColor(Color.cyan);
 		g.fillOval(60, 50, 10, 10);
 		
-		for (Point p : points){
+		/*for (Point p : points){
 			//Point2D pt = new Point(60,50);
 			g2.setPaint(Color.RED);
 			//r.drawPerfectRect(g2);
@@ -220,8 +403,55 @@ public class MyPanel extends JPanel {
 		for (Shape shape : polygons) {
         	g2.setColor(Color.BLACK);
             g2.draw(shape);
-        }
+        }*/
 
+		for (ShapeItems s : shapes){
+			if (s.getName().equals("point")){
+				if (pt!=null && s.getPoint().distance(pt)<6){
+					g2.setPaint(Color.CYAN);
+					g2.fillOval(s.getPoint().x,s.getPoint().y ,10,10);
+				}
+				else {
+					g2.setPaint(Color.RED);
+					g2.fillOval(s.getPoint().x,s.getPoint().y ,10,10);
+				}
+			}
+			else if (pt!=null && s.getShape().contains(pt)){
+				g1.setPaint(Color.CYAN);
+				//r.drawPerfectRect(g2);
+				g1.setStroke(new BasicStroke(3));
+				g1.draw(s.getShape());
+				//System.out.println("Contains");
+				//g1.dispose();
+				g1.setStroke(new BasicStroke(1));
+				
+			}
+			else if (pt!=null && s.getName().equals("line")){
+				if (((Line2D.Double) s.getShape()).ptLineDist(pt)<5){
+					
+					g1.setPaint(Color.CYAN);
+					//r.drawPerfectRect(g2);
+					g1.setStroke(new BasicStroke(3));
+					g1.draw(s.getShape());
+					//System.out.println("Contains");
+					//g1.dispose();
+					g1.setStroke(new BasicStroke(1));
+				}
+				else{
+					g2.setColor(s.getColor());
+					g2.draw(s.getShape());
+				}
+				
+			}
+			else{
+				g2.setColor(s.getColor());
+				g2.draw(s.getShape());
+			}
+			
+
+		}
+		
+		
 		//System.out.println(shapes.size());
 		if (startDrag_line != null && endDrag_line != null) {
 	        g2.setPaint(Color.RED);
