@@ -1,35 +1,32 @@
 import java.awt.Color;
 import java.awt.Point;
-import java.awt.Rectangle;
-import java.awt.Shape;
+
 import java.awt.geom.Line2D;
 import java.awt.geom.Path2D;
 import java.awt.geom.PathIterator;
 import java.awt.geom.Point2D;
 import java.awt.geom.Rectangle2D;
 import java.io.*;
-import java.util.*;
 
-import javax.swing.JButton;
 import javax.swing.JFileChooser;
 import javax.swing.filechooser.FileNameExtensionFilter;
 
 
 public class FileHandling {
 
-	static String fileName = null;
-	static String line = null;
+	String fileName = null;
+	String line = null;
 	
 	
-	public static void ReadFile(){
+	public void ReadFile(){
 		fileName = "E:/GEOMATICS MASTERS-HSKA/WS 2017-18/Software Engineering/Exercises/Drawing/src/ShapeCoordinates.csv";
 		String [] coords;
-		
+		String [] color;
 	//setup file CHOOSER
 	//creates a jFileChooser
 		JFileChooser  fileChooser = new JFileChooser();
 		//Sets the text used in the ApproveButton in the FileChooserUI. 
-		fileChooser.setApproveButtonText("Select File");
+		fileChooser.setApproveButtonText("Select CSV File");
 		//disables the AcceptAll FileFilter
 		fileChooser.setAcceptAllFileFilterUsed(false);
 		// creates a new file extension filter
@@ -58,20 +55,23 @@ public class FileHandling {
 		
 					if (coords[0].equals("point")){
 						//MyPanel.points.add(new Point(Integer.parseInt(coords[1]),Integer.parseInt(coords[2])));
-						MyPanel.shapes.add(new ShapeItems ("point" , new Point(Integer.parseInt(coords[1]),Integer.parseInt(coords[2])) , Color.BLACK));
+						color = coords[1].split("-");
+						MyPanel.shapes.add(new ShapeItems ("point" , new Point(Integer.parseInt(coords[2]),Integer.parseInt(coords[3])) , new Color(Integer.parseInt(color[0]),Integer.parseInt(color[1]),Integer.parseInt(color[2]))));
 					}
 					if (coords[0].equals("line")){
-						MyPanel.shapes.add(new ShapeItems("line" , new Line2D.Double(new Point2D.Double(Double.parseDouble(coords[1]),Double.parseDouble(coords[2])) , new Point2D.Double(Double.parseDouble(coords[3]),Double.parseDouble(coords[4]))) , Color.BLACK));
+						color = coords[1].split("-");
+						MyPanel.shapes.add(new ShapeItems("line" , new Line2D.Double(new Point2D.Double(Double.parseDouble(coords[2]),Double.parseDouble(coords[3])) , new Point2D.Double(Double.parseDouble(coords[4]),Double.parseDouble(coords[5]))) , new Color(Integer.parseInt(color[0]),Integer.parseInt(color[1]),Integer.parseInt(color[2]))));
 					}
 					if (coords[0].equals("rectangle")){
-						MyPanel.shapes.add(new ShapeItems ("rectangle" , new Rectangle2D.Double(Double.parseDouble(coords[1]),Double.parseDouble(coords[2]) , Double.parseDouble(coords[3]) , Double.parseDouble(coords[4]) ),Color.BLACK) );
+						color = coords[1].split("-");
+						MyPanel.shapes.add(new ShapeItems ("rectangle" , new Rectangle2D.Double(Double.parseDouble(coords[2]),Double.parseDouble(coords[3]) , Double.parseDouble(coords[4]) , Double.parseDouble(coords[5])) , new Color(Integer.parseInt(color[0]),Integer.parseInt(color[1]),Integer.parseInt(color[2])) ));
 					}
 					if (coords[0].equals("polygon")){
 						
 						Path2D.Double path = new Path2D.Double();
-	
-						path.moveTo(Double.parseDouble(coords[1]), Double.parseDouble(coords[2]));
-						for (int i=3 ; i<coords.length; i+=2){
+						color = coords[1].split("-");
+						path.moveTo(Double.parseDouble(coords[2]), Double.parseDouble(coords[3]));
+						for (int i=4 ; i<coords.length; i+=2){
 	
 							if (i==coords.length-3){
 								path.closePath();
@@ -81,7 +81,7 @@ public class FileHandling {
 							path.lineTo(Double.parseDouble(coords[i]), Double.parseDouble(coords[i+1]));
 							
 						}
-						MyPanel.shapes.add(new ShapeItems("polygon" , path , Color.BLACK));
+						MyPanel.shapes.add(new ShapeItems("polygon" , path , new Color(Integer.parseInt(color[0]),Integer.parseInt(color[1]),Integer.parseInt(color[2]))));
 						
 					}
 					
@@ -103,7 +103,7 @@ public class FileHandling {
 	      }
 		
 	}
-	public static void WriteFile(){
+	public void WriteFile(){
 		
 		//creates a jFileChooser
 		   JFileChooser  fileChooser = new JFileChooser();
@@ -126,88 +126,7 @@ public class FileHandling {
 					FileWriter fileWriter = new FileWriter(file);
 					System.out.println("Writing to File..." + fileName );
 					BufferedWriter bufferedWriter= new BufferedWriter(fileWriter);
-					
-					/*for (Point p : MyPanel.points){
-						
-						bufferedWriter.write("point" + ',');
-						bufferedWriter.write(Integer.toString(p.x));
-						bufferedWriter.write(',');
-						//System.out.println((int) (l.getP1().getX() + ','));
-						bufferedWriter.write(Integer.toString(p.y));
-						
-						bufferedWriter.newLine();
-						
-					}
-					
-					for (Line2D.Double l : MyPanel.lines){
-						
-						bufferedWriter.write("line" + ',');
-						bufferedWriter.write(Double.toString((l.getP1().getX())));
-						bufferedWriter.write(',');
-						//System.out.println((int) (l.getP1().getX() + ','));
-						bufferedWriter.write(Double.toString((l.getP1().getY())));
-						bufferedWriter.write(',');
-						bufferedWriter.write(Double.toString((l.getP2().getX())));
-						bufferedWriter.write(',');
-						//System.out.println((int) (l.getP1().getX() + ','));
-						bufferedWriter.write(Double.toString((l.getP2().getY())));
-						
-						
-						bufferedWriter.newLine();
-						
-					}
-					for (Rectangle2D.Double r : MyPanel.rectangles){
-						
-						bufferedWriter.write("rectangle" + ',');
-						bufferedWriter.write(Double.toString(r.x));
-						bufferedWriter.write(',');
-						//System.out.println((int) (l.getP1().getX() + ','));
-						bufferedWriter.write(Double.toString(r.y));
-						bufferedWriter.write(',');
-						bufferedWriter.write(Double.toString(r.getWidth()));
-						bufferedWriter.write(',');
-						//System.out.println((int) (l.getP1().getX() + ','));
-						bufferedWriter.write(Double.toString(r.getHeight()));
-						
-						
-						bufferedWriter.newLine();
-						
-					}
-					int type = 0;
-					double val1 =0;
-					double val2 =0;
-		
-					double [] val = new double[6];
-					
-					for (Path2D pa : MyPanel.polygons){
-						PathIterator pi = pa.getPathIterator(null, 0);
-						bufferedWriter.write("polygon" + ',');
-						while(!pi.isDone()){
-							type = pi.currentSegment(val);
-							if (type == PathIterator.SEG_MOVETO) {
-								val1 = val[0] ; val2 = val[1];
-								System.out.println("move to:"+val[0] +" , " +val[1]);
-								bufferedWriter.write(Double.toString(val[0]) + ',' + Double.toString(val[1]) + ',');
-								//System.out.println(val[1]);
-							}
-							else if (type == PathIterator.SEG_LINETO) {
-								System.out.println("line to:"+val[0] +" , " +val[1]);
-								bufferedWriter.write(Double.toString(val[0]) + ',' + Double.toString(val[1]) + ',');
-								//System.out.println(val[1]);
-							}
-							else if (type == PathIterator.SEG_CLOSE) {
-								System.out.println("close:"+val[0] +" , " +val[1]);
-								bufferedWriter.write(Double.toString(val1) + ',' + Double.toString(val2));
-								//System.out.println(val[1]);
-							}
-		
-							pi.next();
-							
-		
-						}
-						bufferedWriter.newLine();
-						
-					}*/
+
 					int type = 0;
 					double val1 =0;
 					double val2 =0;
@@ -217,6 +136,13 @@ public class FileHandling {
 						if (s.getName().equals("point")){
 							Point p = s.getPoint();
 							bufferedWriter.write("point" + ',');
+							int rp = s.getColor().getRed();
+							int gp = s.getColor().getGreen();
+							int bp = s.getColor().getBlue();
+							
+							String color = Integer.toString(rp)+"-"+Integer.toString(gp)+"-"+Integer.toString(bp);
+							
+							bufferedWriter.write(color + ',');
 							bufferedWriter.write(Integer.toString(p.x));
 							bufferedWriter.write(',');
 							//System.out.println((int) (l.getP1().getX() + ','));
@@ -228,6 +154,13 @@ public class FileHandling {
 						if (s.getName().equals("line")){
 							Line2D.Double l = (java.awt.geom.Line2D.Double) s.getShape();
 							bufferedWriter.write("line" + ',');
+							int rp = s.getColor().getRed();
+							int gp = s.getColor().getGreen();
+							int bp = s.getColor().getBlue();
+							
+							String color = Integer.toString(rp)+"-"+Integer.toString(gp)+"-"+Integer.toString(bp);
+							
+							bufferedWriter.write(color + ',');
 							bufferedWriter.write(Double.toString((l.getP1().getX())));
 							bufferedWriter.write(',');
 							//System.out.println((int) (l.getP1().getX() + ','));
@@ -245,6 +178,13 @@ public class FileHandling {
 						if (s.getName().equals("rectangle")){
 							Rectangle2D.Double r = (Rectangle2D.Double) s.getShape();
 							bufferedWriter.write("rectangle" + ',');
+							int rp = s.getColor().getRed();
+							int gp = s.getColor().getGreen();
+							int bp = s.getColor().getBlue();
+							
+							String color = Integer.toString(rp)+"-"+Integer.toString(gp)+"-"+Integer.toString(bp);
+							
+							bufferedWriter.write(color + ',');
 							bufferedWriter.write(Double.toString(r.x));
 							bufferedWriter.write(',');
 							//System.out.println((int) (l.getP1().getX() + ','));
@@ -262,6 +202,14 @@ public class FileHandling {
 						if (s.getName().equals("polygon")){
 							PathIterator pi = s.getShape().getPathIterator(null, 0);
 							bufferedWriter.write("polygon" + ',');
+							
+							int rp = s.getColor().getRed();
+							int gp = s.getColor().getGreen();
+							int bp = s.getColor().getBlue();
+							
+							String color = Integer.toString(rp)+"-"+Integer.toString(gp)+"-"+Integer.toString(bp);
+							
+							bufferedWriter.write(color + ',');
 							while(!pi.isDone()){
 								type = pi.currentSegment(val);
 								if (type == PathIterator.SEG_MOVETO) {

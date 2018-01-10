@@ -20,6 +20,7 @@ public class MyPanel extends JPanel {
 	public static ArrayList<Line2D.Double> lines = new ArrayList<Line2D.Double>();
 	public static ArrayList<Rectangle2D.Double> rectangles = new ArrayList<Rectangle2D.Double>();
 	public static List<ShapeItems> shapes = new ArrayList<ShapeItems>();
+	public static List<ShapeItems> selected_shapes = new ArrayList<ShapeItems>();
 	private Path2D currentShape;
     public static List<Path2D> polygons = new ArrayList<Path2D>();
     private Point lastPoint;
@@ -31,6 +32,7 @@ public class MyPanel extends JPanel {
 	Point pt = null;   // point for selection
 	ShapeItems selected = null;
 	Color default_Color = Color.BLACK;
+	Shape r;
 	
 	public MyPanel(){
 	
@@ -73,7 +75,12 @@ public class MyPanel extends JPanel {
 	                        repaint();
 	                    }
 	                   
-	                }
+	            }
+				else if(ShapeDrawing.current_shape == 5){
+					this.x = e.getX();
+					this.y = e.getY();
+					startDrag_rect = new Point(x,y);
+				}
 				else if (ShapeDrawing.current_shape == 10){     
 					Color old_color= null;
 					pt = new Point(e.getX(),e.getY());
@@ -90,11 +97,10 @@ public class MyPanel extends JPanel {
                     }
                     repaint();*/
 					for (ShapeItems item : shapes) {              //This is for changing the color and not to be used here in this block
-                    	if(item.getName().equals("rectangle") || item.getName().equals("polygon")){
-                    		if (item.getShape().contains((Point2D)pt)) {
-                    			selected = item;
-                    			break;
-                    		}
+                    	if((item.getName().equals("rectangle") || item.getName().equals("polygon"))&& item.getShape().contains((Point2D)pt)){
+                			selected = item;
+                			System.out.println(selected.getShape());
+                			break;
                         }
                         else if (item.getName().equals("line") && ((Line2D.Double) item.getShape()).ptLineDist(pt)<5){
                         	selected = item;
@@ -107,6 +113,7 @@ public class MyPanel extends JPanel {
                         }
                         else{
                         	selected = null;
+
                         }
 
                     }
@@ -114,7 +121,6 @@ public class MyPanel extends JPanel {
 						
 					
 				}
-					
 
 				else if (ShapeDrawing.rectangle.isEnabled()){
 					ShapeDrawing.label.setText("Please select a shape from toolbar!");
@@ -143,12 +149,28 @@ public class MyPanel extends JPanel {
 			        endDrag_rect = null;
 					repaint();
 				}
-				else{
+				else if(ShapeDrawing.current_shape ==5){   // for range query 
+					this.dx = e.getX();
+					this.dy = e.getY();
+					MyRectangle rect = new MyRectangle(x,y,dx,dy);
+					r = rect.makeRectangle();
 					
+					selected_shapes.clear();
+					repaint();
 					
+					for (ShapeItems item : shapes){
+						if (item.getName().equals("point")){
+							if (r.contains(item.getPoint())){
+								selected_shapes.add(item);
+							}
+						}
+						
+					}
+					
+					startDrag_rect = null;
+			        endDrag_rect = null;
+			        repaint();
 				}
-				//System.out.println("Mouse Released at: "+e.getPoint());
-				
 
 			}
 	      });
@@ -158,6 +180,12 @@ public class MyPanel extends JPanel {
 	    		  endDrag_line = e.getPoint();
 		  		  endDrag_rect = new Point(e.getX(), e.getY());
 		  		  repaint();
+		  		  
+		  		if(ShapeDrawing.current_shape ==5){
+		  			endDrag_rect = new Point(e.getX(), e.getY());
+					repaint();
+					
+				}
 	    	  }
 	    	  public void mouseMoved(MouseEvent e){
 	  			
@@ -199,6 +227,8 @@ public class MyPanel extends JPanel {
 		rectangles.clear();
 		polygons.clear();
 		shapes.clear();
+		selected_shapes.clear();
+		r=null;
 
 		repaint();
 	}
@@ -221,7 +251,8 @@ public class MyPanel extends JPanel {
 	public void move(){
 		if (selected != null){
 			System.out.println(ShapeDrawing.moveID);
-			if (selected.getName() == "point"){
+			
+			if (selected.getName().equals("point")){
 				Point p = null;
 				switch (ShapeDrawing.moveID){
 					case "up":
@@ -254,7 +285,7 @@ public class MyPanel extends JPanel {
 				}
 				repaint();
 			}
-			else if (selected.getName() == "line"){
+			else if (selected.getName().equals("line")){
 				Line2D.Double l = null;
 				switch (ShapeDrawing.moveID){
 					case "up":
@@ -286,7 +317,8 @@ public class MyPanel extends JPanel {
 				}
 				repaint();
 			}
-			else if (selected.getName() == "rectangle"){
+			else if (selected.getName().equals("rectangle")){
+				
 				Rectangle2D.Double r = null;
 				switch (ShapeDrawing.moveID){
 				case "up":
@@ -318,7 +350,8 @@ public class MyPanel extends JPanel {
 				}
 				repaint();
 			}
-			else if (selected.getName() == "polygon"){
+			else if (selected.getName().equals("polygon")){
+				System.out.println(selected.getName());
 				AffineTransform at = new AffineTransform();
 		    	at.translate(0, 0);
 				switch (ShapeDrawing.moveID){
@@ -366,8 +399,9 @@ public class MyPanel extends JPanel {
 		//System.out.println("in paint method");
 		super.paintComponent(g2);
 		
-		g.setColor(Color.cyan);
-		g.fillOval(60, 50, 10, 10);
+		//g.setColor(Color.cyan);
+		//g.fillOval(60, 50, 10, 10);
+		
 		
 		/*for (Point p : points){
 			//Point2D pt = new Point(60,50);
@@ -404,7 +438,9 @@ public class MyPanel extends JPanel {
         	g2.setColor(Color.BLACK);
             g2.draw(shape);
         }*/
-
+		
+		
+		
 		for (ShapeItems s : shapes){
 			if (s.getName().equals("point")){
 				if (pt!=null && s.getPoint().distance(pt)<6){
@@ -412,7 +448,7 @@ public class MyPanel extends JPanel {
 					g2.fillOval(s.getPoint().x,s.getPoint().y ,10,10);
 				}
 				else {
-					g2.setPaint(Color.RED);
+					g2.setPaint(s.getColor());
 					g2.fillOval(s.getPoint().x,s.getPoint().y ,10,10);
 				}
 			}
@@ -478,7 +514,19 @@ public class MyPanel extends JPanel {
             	g2.setColor(Color.CYAN);//g2.setColor(new Color(255, 0, 0, 64));
                 g2.draw(new Line2D.Float(lastPoint, currentPoint));
             }
-        }		
+        }	
+ 
+        if (r!=null){
+        	g2.setColor(Color.BLACK);
+            g2.fill(r);
+            for (ShapeItems s : selected_shapes){
+    			g2.setPaint(Color.CYAN);
+    			g2.fillOval(s.getPoint().x,s.getPoint().y ,10,10);
+    		}
+        }
+		
+		
+        
 		g2.dispose();
 
 	}

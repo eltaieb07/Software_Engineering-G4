@@ -1,5 +1,6 @@
 import javax.swing.*;
 import javax.swing.border.EtchedBorder;
+import javax.swing.colorchooser.ColorSelectionModel;
 
 import java.awt.*;
 import java.awt.event.ActionEvent;
@@ -7,14 +8,20 @@ import java.awt.event.ActionListener;
 import java.awt.event.MouseAdapter;
 import java.awt.event.MouseEvent;
 import java.awt.event.MouseListener;
+import javax.swing.tree.TreeSelectionModel;
+import javax.swing.event.ChangeEvent;
+import javax.swing.event.ChangeListener;
+import javax.swing.event.TreeSelectionEvent;
+import javax.swing.event.TreeSelectionListener;
+import javax.swing.tree.DefaultMutableTreeNode;
 
 
 public class ShapeDrawing extends JFrame{
 	
-	
-	
+
 	MyPanel panel;
 	DatabaseConnectivity dc;
+	FileHandling fh;
 	private JPanel p;
 	private JPanel p2;
 	private JMenuBar menubar;
@@ -31,7 +38,17 @@ public class ShapeDrawing extends JFrame{
 	public JButton clear;
 	public JButton moveUp, moveDown, moveLeft, moveRight;
 	public JButton delete = new JButton();
+	public JButton range_query = new JButton();
 	public static int current_shape; public static String moveID = "z";
+	public JTree tree;
+	public JButton db_conn;
+	
+	private JPanel db_panel;
+	private JTextField txtLocalhost;
+	private JTextField textPort;
+	private JTextField txtdb;
+	private JTextField textUsername;
+	private JTextField password;
 	
 	//private static JFrame f;
 	public ShapeDrawing(){
@@ -40,28 +57,20 @@ public class ShapeDrawing extends JFrame{
 		getContentPane().setLayout(null);
 		//getContentPane().setBackground(Color.GRAY);
 		panel  = new MyPanel();
-		panel.setBounds(200, 50, 1160, 700);
+		panel.setBounds(200, 50, 1160, 642);
+		panel.setBackground(Color.WHITE);
 		p =  new JPanel();
-		p.setBounds(0, 50, 200, 700);
+		p.setBounds(0, 50, 200, 642);
 		p2 = new JPanel();
-		p2.setBounds(0, 0, 1400, 50);
-		//JFrame f = new JFrame("My Frame");
+		p2.setBounds(0, 0, 1373, 50);
+
 		this.setTitle("My Frame");
         this.setDefaultCloseOperation(JFrame.EXIT_ON_CLOSE);
-        //f.setContentPane(new ShapeDrawing());
-        
         this.setExtendedState(JFrame.MAXIMIZED_BOTH); 
-        //this.setUndecorated(true);
         
-       // Dimension dim1 = new Dimension(500,10);
-        //panel.setPreferredSize(dim1);
-        //panel.setBounds(200, 100, 600, 200);
-        //Dimension dim2 = new Dimension(200,100);
-        //p.setPreferredSize(dim2);
-        //p2.setPreferredSize(new Dimension(100,50));
+        
         p.setBorder((BorderFactory.createLineBorder(Color.LIGHT_GRAY)));
         p2.setBorder((BorderFactory.createEtchedBorder(EtchedBorder.RAISED)));
-        
         panel.setBorder((BorderFactory.createLineBorder(Color.LIGHT_GRAY)));
         
     
@@ -70,12 +79,42 @@ public class ShapeDrawing extends JFrame{
         // this.add(panel, BorderLayout.EAST);
         getContentPane().add(p);
         p.setLayout(null);
-        
-        tree = new JTree();
-        tree.setBounds(20, 11, 100, 201);
-        p.add(tree);
+   
         getContentPane().add(p2);
         //p2.setLayout(new BoxLayout(p2, BoxLayout.X_AXIS));
+        
+        
+        
+        DefaultMutableTreeNode objectsRoot = new DefaultMutableTreeNode("Shapes");
+        //create the child nodes
+        DefaultMutableTreeNode pointNode = new DefaultMutableTreeNode("Points");
+        DefaultMutableTreeNode lineNode = new DefaultMutableTreeNode("Lines");
+        DefaultMutableTreeNode rectangleNode = new DefaultMutableTreeNode("Rectangles");
+        DefaultMutableTreeNode polygonNode = new DefaultMutableTreeNode("Polygons");
+        //add the child nodes to the root node
+        objectsRoot.add(pointNode);
+        objectsRoot.add(lineNode);
+        objectsRoot.add(rectangleNode);
+        objectsRoot.add(polygonNode);
+        
+        DefaultMutableTreeNode ColorChooserPNodeF = new DefaultMutableTreeNode("Color");
+        DefaultMutableTreeNode ColorChooserLNodeF = new DefaultMutableTreeNode("Color");
+        DefaultMutableTreeNode ColorChooserRNodeF = new DefaultMutableTreeNode("Color");
+        DefaultMutableTreeNode ColorChooserPolyNodeF = new DefaultMutableTreeNode("Color");
+       
+        pointNode.add(ColorChooserPNodeF);
+        lineNode.add(ColorChooserLNodeF);
+        rectangleNode.add(ColorChooserRNodeF);
+        polygonNode.add(ColorChooserPolyNodeF);
+
+        
+        
+        tree = new JTree(objectsRoot);
+        tree.setBounds(20, 11, 150, 250);
+        p.add(tree);
+        tree.getSelectionModel().setSelectionMode(TreeSelectionModel.SINGLE_TREE_SELECTION);
+        tree.addTreeSelectionListener(new SelectionListener());
+
          
         menubar = new JMenuBar();
 		this.setJMenuBar(menubar);
@@ -87,9 +126,10 @@ public class ShapeDrawing extends JFrame{
 		JMenuItem save_to  = new JMenuItem("Save to File");
 		JMenuItem exit = new JMenuItem("Exit");
 		
+		fh = new FileHandling();
 		load.addActionListener(new ActionListener() {
 		    public void actionPerformed(ActionEvent ev) {
-	            FileHandling.ReadFile();
+	            fh.ReadFile();
 	            panel.update_drawing();
 	            label.setText("Shapes loaded from File!");
 		    }
@@ -97,7 +137,7 @@ public class ShapeDrawing extends JFrame{
 		
 		save_to.addActionListener(new ActionListener() {
 		    public void actionPerformed(ActionEvent ev) {
-	            FileHandling.WriteFile();
+	            fh.WriteFile();
 	            label.setText("Shapes saved into File!");
 	            
 		    }
@@ -252,12 +292,30 @@ public class ShapeDrawing extends JFrame{
 		delete.setToolTipText("Delete Selected Object");
 		delete.addActionListener(ac);
 		p2.add(delete);
-	    p2.add(delete);
+
+	    
+	    range_query.setBounds(700, 7, 35, 35);
+	    range_query.setBackground(Color.WHITE);
+		ImageIcon icon_range_query = new ImageIcon("..\\Drawing\\icons\\range_query.png");
+		range_query.setIcon(icon_range_query);
+		range_query.setToolTipText("Select multiple objects");
+		range_query.addActionListener(ac);
+		p2.add(range_query);
+
          
 	     label = new JLabel();
-	     label.setBounds(700, 7, 400, 35);
+	     label.setBounds(750, 7, 320, 35);
 	     p2.add(label);
 	     label.setText("Editing Stopped...");
+	     
+	     db_conn = new JButton();
+	     db_conn.setBounds(1300, 7, 35, 35);
+	     p2.add(db_conn);
+	     db_conn.setBackground(Color.WHITE);
+	     db_conn.setIcon(new ImageIcon("..\\Drawing\\icons\\db_connection.png"));
+	     db_conn.setToolTipText("Database Connectivity");
+	     db_conn.addActionListener(ac);
+	     p2.add(db_conn);
 	  
 	     this.setVisible(true);
         
@@ -294,14 +352,39 @@ public class ShapeDrawing extends JFrame{
 	        	  label.setText("Display Cleared...");
 	          }
 	          if (actionEvent.getSource() == open){
-	        	  FileHandling.ReadFile();
-		          panel.update_drawing();
-		          label.setText("Shapes loaded from Database!");
+	        	  //FileHandling.ReadFile();
+	        	  if(dc!=null){
+	        		  if (dc.testConnection())
+	        		  {
+	        			  dc.loadDb();
+				          panel.update_drawing();
+				          label.setText("Shapes loaded from Database!");
+	        		  }
+	        		  else{
+	        			  JOptionPane.showMessageDialog(null, "Problem in Connection to the Database");
+	        		  }
+		        	  
+	        	  }
+	        	  else{
+	        		  JOptionPane.showMessageDialog(null, "Please first connect with the Database");
+	        	  }
 	          }
 	          if (actionEvent.getSource() == save){
-	        	  FileHandling.WriteFile();
-	        	  //DatabaseConnectivity.saveToDb();
-	        	  label.setText("Shapes Saved into Database!");
+	        	  //FileHandling.WriteFile();
+	        	  if(dc!=null){
+	        		  if (dc.testConnection())
+	        		  {
+	        			  dc.saveToDb();
+			        	  label.setText("Shapes Saved into Database!");
+	        		  }
+	        		  else{
+	        			  JOptionPane.showMessageDialog(null, "Problem in Connection to the Database");
+	        		  }
+		        	  
+	        	  }
+	        	  else{
+	        		  JOptionPane.showMessageDialog(null, "Please first connect with the Database");
+	        	  }
 	          }
 	          if (actionEvent.getSource() == select){
 	        	  label.setText("Click on the shape to select");
@@ -326,11 +409,108 @@ public class ShapeDrawing extends JFrame{
 	          if (actionEvent.getSource() == delete){
 	        	  panel.delete();
 	          }
+	          if (actionEvent.getSource() == range_query){
+	        	  current_shape = 5;
+	          }
+	          
+	          if (actionEvent.getSource() == db_conn){
+	        	  JFrame frame2 = new JFrame("Add Database Connection");
+	        	  frame2.setSize(300,400);
+	        	  //frame2.setLayout(null);
+	        	 
+	        	  
+	        	  db_panel = new JPanel();
+	        	  frame2.add(db_panel);
+	      	      db_panel.setLayout(null);
+	        	  
+	        	  
+	        	  JLabel lblHost = new JLabel("Host");
+		      		lblHost.setBounds(61, 76, 64, 14);
+		      		db_panel.add(lblHost);
+		      		
+		      		JLabel lblPort = new JLabel("Port");
+		      		lblPort.setBounds(61, 117, 64, 14);
+		      		db_panel.add(lblPort);
+		      		
+		      		JLabel lblDatabase = new JLabel("Database");
+		      		lblDatabase.setBounds(61, 159, 64, 14);
+		      		db_panel.add(lblDatabase);
+		      		
+		      		JLabel lblUsername = new JLabel("Username");
+		      		lblUsername.setBounds(61, 197, 64, 14);
+		      		db_panel.add(lblUsername);
+		      		
+		      		JLabel lblPassword = new JLabel("Password");
+		      		lblPassword.setBounds(61, 243, 64, 14);
+		      		db_panel.add(lblPassword);
+		      		
+		      		txtLocalhost = new JTextField();
+		      		txtLocalhost.setText("127.0.0.1");
+		      		txtLocalhost.setBounds(135, 73, 86, 20);
+		      		db_panel.add(txtLocalhost);
+		      		txtLocalhost.setColumns(50);
+		      		
+		      		textPort = new JTextField();
+		      		textPort.setText("5432");
+		      		textPort.setBounds(135, 114, 86, 20);
+		      		db_panel.add(textPort);
+		      		textPort.setColumns(50);
+		      		
+		      		txtdb = new JTextField();
+		      		txtdb.setText("java_db");
+		      		txtdb.setBounds(135, 156, 86, 20);
+		      		db_panel.add(txtdb);
+		      		txtdb.setColumns(50);
+		      		
+		      		textUsername = new JTextField();
+		      		textUsername.setBounds(135, 194, 86, 20);
+		      		db_panel.add(textUsername);
+		      		textUsername.setColumns(50);
+		      		
+		      		password = new JTextField();
+		      		password.setBounds(135, 240, 86, 20);
+		      		db_panel.add(password);
+		      		password.setColumns(50);
+		      		
+		      		JButton btnClose = new JButton("Close");
+		      		btnClose.setBounds(161, 304, 74, 23);
+		      		db_panel.add(btnClose);
+		      		btnClose.addActionListener(new ActionListener() {
+					    public void actionPerformed(ActionEvent ev) {
+					    	frame2.setVisible(false);
+					    }
+					});
+		      		
+		      		JButton btnConnect = new JButton("Connect");
+		      		btnConnect.setBounds(61, 304, 94, 23);
+		      		db_panel.add(btnConnect);
+		      		btnConnect.addActionListener(new ActionListener() {
+					    public void actionPerformed(ActionEvent ev) {
+					    	String host = "jdbc:postgresql://"+txtLocalhost.getText()+":"+textPort.getText()+"/"+txtdb.getText(); 
+					    	dc = new DatabaseConnectivity(host,textUsername.getText(),password.getText());
+					    	System.out.println(host);
+					    	if(dc.testConnection()){
+					    		//System.out.println(host);
+					    		JOptionPane.showMessageDialog(null, "Connection Established!");
+					    	}
+					    	else{
+					    		//System.out.println(host);
+					    		JOptionPane.showMessageDialog(null, "Connection Unsuccessful!");
+					    		dc=null;
+					    	}
+					    }
+					});
+
+	        	  
+		      		 
+	        	  frame2.setLocationRelativeTo(null);   // Opens the frame in center
+	        	  frame2.setVisible(true);
+	          }
 	          
 	      }
 	};
-	private JTree tree;
 	
+
 	
 	class Listener implements ActionListener
 	{
@@ -377,12 +557,82 @@ public class ShapeDrawing extends JFrame{
 		}
 		
 	}
+	class SelectionListener implements TreeSelectionListener {
+
+	  	  public void valueChanged(TreeSelectionEvent se) {
+	  	    JTree tree = (JTree) se.getSource();
+	  	    DefaultMutableTreeNode selectedNode = (DefaultMutableTreeNode) tree.getLastSelectedPathComponent();
+	  	    if (selectedNode.isLeaf()) {
+	  	    	  JFrame frame = new JFrame("JColorChooser Popup");
+	  	    	  JColorChooser colorChooser = new JColorChooser();
+
+		  	      ColorSelectionModel model = colorChooser.getSelectionModel();
+		  	      ChangeListener changeListener = new ChangeListener() {
+		  	        public void stateChanged(ChangeEvent changeEvent) {
+		  	          Color outlineColor = colorChooser.getColor();
+		  	          label.setForeground(outlineColor);
+		  	          if (selectedNode.getParent().toString() == "Points"){
+		  	        	  for (ShapeItems item : panel.shapes){
+		  	        		  if (item.getName().equals("point")){
+		  	        			  item.setColor(outlineColor);
+		  	        		  }
+		  	        	  }
+		  	        	  
+		  	          }
+		  	          if (selectedNode.getParent().toString() == "Lines"){
+		  	        	  for (ShapeItems item : panel.shapes){
+		  	        		  if (item.getName().equals("line")){
+		  	        			  item.setColor(outlineColor);
+		  	        		  }
+		  	        	  }
+		  	        	  
+		  	          }
+		  	          if (selectedNode.getParent().toString() == "Rectangles"){
+		  	        	  for (ShapeItems item : panel.shapes){
+		  	        		  if (item.getName().equals("rectangle")){
+		  	        			  item.setColor(outlineColor);
+		  	        		  }
+		  	        	  }
+		  	        	  
+		  	          }
+		  	          if (selectedNode.getParent().toString() == "Polygons"){
+		  	        	  for (ShapeItems item : panel.shapes){
+		  	        		  if (item.getName().equals("polygon")){
+		  	        			  item.setColor(outlineColor);
+		  	        		  }
+		  	        	  }
+		  	        	  
+		  	          }
+		  	          
+		  	        }
+		  	        
+		  	      };
+		  	      model.addChangeListener(changeListener);
 	
+		  	      frame.add(colorChooser,BorderLayout.CENTER);
+		  	      
+		  	      JButton btnClose = new JButton("Ok");
+		  	      btnClose.addActionListener(new ActionListener() {
+		  	    	  public void actionPerformed(ActionEvent ev) {
+		  	    		  panel.update_drawing();
+		  	    		  frame.setVisible(false);
+		  	    	  }
+		  	      });
+		  	      
+		  	      frame.add(btnClose, BorderLayout.SOUTH);
+		  	      frame.pack();
+		  	      frame.setLocationRelativeTo(null);   // Opens the frame in center
+		  	      frame.setVisible(true);
+		  	        //JColorChooser.showDialog(null, "Choose Color", null);
+		  	       // Color newForegroundColor = colorChooser.getColor();
+		  	    }
+		  }
+	}
 
 	public static void main(String a[]){
-		
-		new ShapeDrawing();
-    }
 
+		new ShapeDrawing();
+		
+    }
 }
 

@@ -1,14 +1,14 @@
 import java.awt.Color;
 import java.awt.Point;
 import java.awt.Shape;
-import java.awt.geom.AffineTransform;
+
 
 class ShapeItems {
 		private String name;
         private Shape shape;
         private Point point;
         private Color color;
-        private boolean moveup = false;
+
 
         public ShapeItems(String name, Shape shape, Color color) {
             super();
