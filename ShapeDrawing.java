@@ -1,8 +1,3 @@
-/**
- * 
- */
-package gisObject;
-
 import javax.swing.*;
 
 import javax.swing.border.EtchedBorder;
@@ -86,7 +81,7 @@ public class ShapeDrawing extends JFrame{
 
 	public JButton range_query = new JButton();
 
-	public static int current_shape; public static String moveID = "z";
+	public static int selected_button; public static String moveID = "z";
 
 	public JTree tree;
 
@@ -122,7 +117,7 @@ public class ShapeDrawing extends JFrame{
 
 		panel  = new MyPanel();
 
-		panel.setBounds(200, 50, 1160, 642);
+		panel.setBounds(200, 50, 1713, 900);
 
 		panel.setBackground(Color.WHITE);
 
@@ -132,7 +127,7 @@ public class ShapeDrawing extends JFrame{
 
 		p2 = new JPanel();
 
-		p2.setBounds(0, 0, 1373, 50);
+		p2.setBounds(0, 0, 1913, 50);
 
 
 
@@ -220,14 +215,10 @@ public class ShapeDrawing extends JFrame{
 
         polygonNode.add(ColorChooserPolyNodeF);
         
-        UIManager.put("Tree.leafIcon", new ImageIcon("D:\\Hochschule\\Geomatics\\Programming\\color.png"));
-	    UIManager.put("Tree.openIcon", new ImageIcon("D:\\Hochschule\\Geomatics\\Programming\\close_kl.png"));
-	    UIManager.put("Tree.closedIcon", new ImageIcon("D:\\Hochschule\\Geomatics\\Programming\\open_kl.png"));
+        UIManager.put("Tree.leafIcon", new ImageIcon("..\\Drawing\\icons\\color.png"));
+	    UIManager.put("Tree.openIcon", new ImageIcon("..\\Drawing\\icons\\collapse.png"));
+	    UIManager.put("Tree.closedIcon", new ImageIcon("..\\Drawing\\icons\\expand.png"));
 
-
-        
-
-        
 
         tree = new JTree(objectsRoot);
 
@@ -663,7 +654,7 @@ public class ShapeDrawing extends JFrame{
 
 	          if(actionEvent.getSource() == point){
 
-	        	  current_shape = 1;
+	        	  selected_button = 1;
 
 	        	  System.out.println("point");
 
@@ -673,7 +664,7 @@ public class ShapeDrawing extends JFrame{
 
 	          if(actionEvent.getSource() == line){
 
-	        	  current_shape = 2;
+	        	  selected_button = 2;
 
 	        	  System.out.println("line");
 
@@ -683,7 +674,7 @@ public class ShapeDrawing extends JFrame{
 
 	          if(actionEvent.getSource() == rectangle){
 
-	        	  current_shape = 3;
+	        	  selected_button = 3;
 
 	        	  System.out.println("rectangle");
 
@@ -693,7 +684,7 @@ public class ShapeDrawing extends JFrame{
 
 	          if(actionEvent.getSource() == polygon){
 
-	        	  current_shape = 4;
+	        	  selected_button = 4;
 
 	        	  System.out.println("polygon");
 
@@ -705,7 +696,7 @@ public class ShapeDrawing extends JFrame{
 
 	        	  panel.clear_display();
 
-	        	  current_shape = 0;
+	        	  selected_button = 0;
 
 	        	  System.out.println("Display Cleared...");
 
@@ -787,7 +778,7 @@ public class ShapeDrawing extends JFrame{
 
 	        	  label.setText("Click on the shape to select");
 
-	        	  current_shape = 10;
+	        	  selected_button = 10;
 
 	          }
 
@@ -831,7 +822,7 @@ public class ShapeDrawing extends JFrame{
 
 	          if (actionEvent.getSource() == range_query){
 
-	        	  current_shape = 5;
+	        	  selected_button = 5;
 
 	          }
 
@@ -1091,7 +1082,7 @@ public class ShapeDrawing extends JFrame{
 
 				label.setText("Editing Stopped...");
 
-				current_shape =0;
+				selected_button =0;
 
 			}
 

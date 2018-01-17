@@ -1,8 +1,3 @@
-/**
- * 
- */
-package gisObject;
-
 import java.util.*;
 import java.util.List;
 
@@ -18,49 +13,98 @@ import java.awt.geom.Rectangle2D;
 import java.awt.geom.Rectangle2D.Double;
 import java.awt.geom.Path2D;
 
-
+/**
+ * 
+ * @author Shahab Ahmed
+ *Drawing Panel Class extends JPanel and registers mouse listeners to it for creating, drawing and painting shapes
+ */
 public class MyPanel extends JPanel {
 	
-	public static ArrayList<Point> points = new ArrayList<Point>();
-	public static ArrayList<Line2D.Double> lines = new ArrayList<Line2D.Double>();
-	public static ArrayList<Rectangle2D.Double> rectangles = new ArrayList<Rectangle2D.Double>();
+	//public static ArrayList<Point> points = new ArrayList<Point>();
+	//public static ArrayList<Line2D.Double> lines = new ArrayList<Line2D.Double>();
+	//public static ArrayList<Rectangle2D.Double> rectangles = new ArrayList<Rectangle2D.Double>();
+	//public static List<Path2D> polygons = new ArrayList<Path2D>();
+	/**
+	 * Array List of type ShapeItems for storing all the shapes e.g. points, lines, rectangles and polygons  
+	 */
 	public static List<ShapeItems> shapes = new ArrayList<ShapeItems>();
+	/**
+	 * Array List of type ShapeItems for storing the shapes(points) by drawing rectangle for range query
+	 */
 	public static List<ShapeItems> selected_shapes = new ArrayList<ShapeItems>();
+	/**
+	 * it stores the current polygon(closed path) which is being created
+	 */
 	private Path2D currentShape;
-    public static List<Path2D> polygons = new ArrayList<Path2D>();
+    /**
+     * it stores the last point created by single click for creating Polygon(closed path)
+     */
     private Point lastPoint;
+    /**
+     * it stores the current point to which user has moved the mouse on during drawing of Polygon. It is updated when the mouse position is changed.
+     */
     private Point currentPoint;
-	
+	/**
+	 * startDrag_rect , endDrag_rect : These points are used to store the point from which dragging starts and point where it ends so that Rectangle can be seen during drawing/dragging.
+	 */
 	Point startDrag_rect, endDrag_rect;    // These points are used to visualise the rectangle during drawing/dragging.
+	/**
+	 * startDrag_line , endDrag_line: These points are used to store the point from which dragging starts and point where it ends so that Line can be seen during drawing/dragging.
+	 */
 	Point startDrag_line, endDrag_line;    // These points are used to visualise the line during drawing/dragging.
-	Point startPoint , endPoint = null;  // These points are for start and end point of line.
+	
+	/**
+	 * it is a point for selection of shapes
+	 */
 	Point pt = null;   // point for selection
+	
+	/**
+	 * it stores the selected shape or object
+	 */
 	ShapeItems selected = null;
+	
+	/**
+	 * it stores the default color to be given to all the shapes to be drawn
+	 */
 	Color default_Color = Color.BLACK;
+	/**
+	 * it stores the rectangular shape for selection of objects by range query
+	 */
 	Shape range;
 	
+	/**
+	 * MyPanel() is a constructor which registers the JPanel with all the required mouse listeners related to drawing of all the shapes.
+	 */
 	public MyPanel(){
 	
+		/**
+		 * Adds mouse listener with implementation of mouse pressed and mouse released functions
+		 */
 		this.addMouseListener(new MouseAdapter() {
 			private int x,y,dx,dy=0;
+			
+			/**
+			 * This function detects starting point for all the shapes e.g. rectangle and line. It creates the point and polygon objects directly in it.
+			 */
 			public void mousePressed(MouseEvent e){
-				//System.out.println("Mouse Pressed at: "+e.getPoint());
-				if (ShapeDrawing.current_shape == 1){
-					points.add(new Point(e.getX() , e.getY()));
+				
+				if (ShapeDrawing.selected_button == 1){
+					//points.add(new Point(e.getX() , e.getY()));
 					shapes.add(new ShapeItems("point", new Point(e.getX() , e.getY()) , default_Color));
 					repaint();
 				}
-				else if (ShapeDrawing.current_shape == 2) {
-					startPoint = e.getPoint();
+				else if (ShapeDrawing.selected_button == 2) {
+					this.x = e.getX();
+					this.y = e.getY();
 					startDrag_line = e.getPoint();
 				
 				}
-				else if (ShapeDrawing.current_shape ==3){
+				else if (ShapeDrawing.selected_button ==3){
 					this.x = e.getX();
 					this.y = e.getY();
 					startDrag_rect = new Point(x,y);
 				}
-				else if (ShapeDrawing.current_shape ==4) {
+				else if (ShapeDrawing.selected_button ==4) {
 	                    if (e.getClickCount() == 1) {
 	                        Point p = e.getPoint();
 	                        lastPoint = p;
@@ -73,7 +117,7 @@ public class MyPanel extends JPanel {
 	                        repaint();
 	                    } else if (e.getClickCount() == 2) {
 	                        currentShape.closePath();
-	                        polygons.add(currentShape);
+	                        //polygons.add(currentShape);
 	                        shapes.add(new ShapeItems("polygon", currentShape , default_Color));
 	                        currentShape = null;
 	                        lastPoint = null;
@@ -81,28 +125,17 @@ public class MyPanel extends JPanel {
 	                    }
 	                   
 	            }
-				else if(ShapeDrawing.current_shape == 5){
+				else if(ShapeDrawing.selected_button == 5){
 					this.x = e.getX();
 					this.y = e.getY();
 					startDrag_rect = new Point(x,y);
 				}
-				else if (ShapeDrawing.current_shape == 10){     
+				else if (ShapeDrawing.selected_button == 10){     
 					Color old_color= null;
 					pt = new Point(e.getX(),e.getY());
-					/*for (ShapeItems item : shapes) {              //This is for changing the color and not to be used here in this block
-						
-                        if (!item.getName().equals("point") && item.getShape().contains(pt)) {
-                        	old_color = item.getColor();
-                            item.setColor(Color.CYAN);
-                            //System.out.println(Color.CYAN);
-                        }
-                        else{
-                        	item.setColor(item.getColor());
-                        }
-                    }
-                    repaint();*/
+
 					for (ShapeItems item : shapes) {              //This is for changing the color and not to be used here in this block
-                    	if((item.getName().equals("rectangle") || item.getName().equals("polygon"))&& item.getShape().contains((Point2D)pt)){
+                    	if((item.getName().equals("rectangle") || item.getName().equals("polygon")) && item.getShape().contains((Point2D)pt)){
                 			selected = item;
                 			System.out.println(selected.getShape());
                 			break;
@@ -132,22 +165,26 @@ public class MyPanel extends JPanel {
 				}
 
 			}
+			/**
+			 * it detects the end points and creates the rectangle and line objects using the existing starting points created in mousePressed() method.
+			 */
 			public void mouseReleased(MouseEvent e){
-				if (ShapeDrawing.current_shape == 2) {
-					endPoint = e.getPoint();
-					lines.add(new Line2D.Double(startPoint,endPoint));
-					shapes.add(new ShapeItems("line", new Line2D.Double(startPoint,endPoint),default_Color));
+				if (ShapeDrawing.selected_button == 2) {
+					this.dx = e.getX();
+					this.dy = e.getY();
+					//lines.add(new Line2D.Double(new Point(x,y),new Point(dx,dy)));
+					shapes.add(new ShapeItems("line", new Line2D.Double(new Point(x,y),new Point(dx,dy)),default_Color));
 					startDrag_line = null;
 					endDrag_line = null;
 					repaint();
 				}
-				else if (ShapeDrawing.current_shape ==3){
+				else if (ShapeDrawing.selected_button ==3){
 					this.dx = e.getX();
 					this.dy = e.getY();
 					
 					//MyRectangle rect = new MyRectangle(x,y,dx,dy);
 					//Shape r = rect.makeRectangle();
-					Shape r = new Rectangle2D.Double(Math.min(x, dx), Math.min(y, dy), Math.abs(x - dx), Math.abs(y - dy));
+					Shape r = new Rectangle(Math.min(x, dx), Math.min(y, dy), Math.abs(x - dx), Math.abs(y - dy));
 					shapes.add(new ShapeItems("rectangle", r,default_Color));
 					//rectangles.add( r);
 					//addRectangle(rect);
@@ -155,12 +192,13 @@ public class MyPanel extends JPanel {
 			        endDrag_rect = null;
 					repaint();
 				}
-				else if(ShapeDrawing.current_shape ==5){   // for range query 
+				else if(ShapeDrawing.selected_button ==5){   // for range query 
 					this.dx = e.getX();
 					this.dy = e.getY();
 					//MyRectangle rect = new MyRectangle(x,y,dx,dy);
 					//r = rect.makeRectangle();
-					range = new Rectangle2D.Double(Math.min(x, dx), Math.min(y, dy), Math.abs(x - dx), Math.abs(y - dy));
+					range = new Rectangle(Math.min(x, dx), Math.min(y, dy), Math.abs(x - dx), Math.abs(y - dy));
+					
 					selected_shapes.clear();
 					repaint();
 					
@@ -168,7 +206,6 @@ public class MyPanel extends JPanel {
 						if (item.getName().equals("point")){
 							if (range.contains(item.getPoint())){
 								selected_shapes.add(item);
-
 							}
 						}
 						
@@ -181,14 +218,16 @@ public class MyPanel extends JPanel {
 
 			}
 	      });
-
+		/**
+		 * Adds mouse motion listener to JPanel with implementation of mouse drag and mouse release functions
+		 */
 	      this.addMouseMotionListener(new MouseMotionAdapter() {
 	    	  public void mouseDragged(MouseEvent e){
 	    		  endDrag_line = e.getPoint();
 		  		  endDrag_rect = new Point(e.getX(), e.getY());
 		  		  repaint();
 		  		  
-		  		if(ShapeDrawing.current_shape ==5){
+		  		if(ShapeDrawing.selected_button ==5){
 		  			endDrag_rect = new Point(e.getX(), e.getY());
 					repaint();
 					
@@ -206,14 +245,8 @@ public class MyPanel extends JPanel {
 	     
 	      });
 	}
-	
-	/*public void addRectangle(MyRectangle r) {
-		// TODO Auto-generated method stub
-		rectangle.add(r);
-		repaint();
-	}*/
-	
-	private void paintBackground(Graphics2D g2){
+
+	/*private void paintBackground(Graphics2D g2){
 	      
 	      
 	      for (int i = 0; i < getSize().width; i += 10) {
@@ -227,21 +260,32 @@ public class MyPanel extends JPanel {
 	      }
 
 	      
-	}
+	}*/
+	
+	/**
+	 * Clears the display by clearing all the lists containing shapes/objects and by calling the repaint() method.
+	 */
 	public void clear_display(){
-		points.clear();
-		lines.clear();
-		rectangles.clear();
-		polygons.clear();
+		//points.clear();
+		//lines.clear();
+		//rectangles.clear();
+		//polygons.clear();
 		shapes.clear();
 		selected_shapes.clear();
 		range=null;
 
 		repaint();
 	}
+	/**
+	 * Redraws the list containing shapes/objects by just calling the repaint() method. This method is used to update the drawing after loading the shapes from CSV File or from Database
+	 */
 	public void update_drawing(){
 		repaint();
 	}
+	
+	/**
+	 * Deletes the selected object by matching it with the one in the list containing all shapes.
+	 */
 	public void delete(){
 		for (Iterator<ShapeItems> iter = shapes.iterator() ; iter.hasNext();){
 			
@@ -254,7 +298,10 @@ public class MyPanel extends JPanel {
 		}
 		repaint();
 	}
-
+	
+	/**
+	 * This function move() is used to move the selected object left, right, up or down
+	 */
 	public void move(){
 		if (selected != null){
 			System.out.println(ShapeDrawing.moveID);
@@ -389,13 +436,17 @@ public class MyPanel extends JPanel {
 		}
 
 	}	
+	
+	/**
+	 * paint() method is where all the painting code is placed e.g. drawing and filling of shapes/objects based upon their colors
+	 */
 	public void paint(Graphics g){
 		Graphics2D g2 = (Graphics2D) g;
 		Graphics2D g1 = (Graphics2D) g;  //for rendering of selected objects
 		
 		g2.setPaint(Color.LIGHT_GRAY);
 	      g2.setRenderingHint(RenderingHints.KEY_ANTIALIASING, RenderingHints.VALUE_ANTIALIAS_ON);
-	      paintBackground(g2);
+	     // paintBackground(g2);
 	      
 	      Color[] colors = { Color.YELLOW, Color.MAGENTA, Color.CYAN , Color.RED, Color.BLUE, Color.PINK};
 	      int colorIndex = 0;
