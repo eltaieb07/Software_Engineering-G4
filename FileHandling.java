@@ -1,8 +1,3 @@
-/**
- * 
- */
-package gisObject;
-
 import java.awt.Color;
 import java.awt.Point;
 
@@ -16,17 +11,30 @@ import java.io.*;
 import javax.swing.JFileChooser;
 import javax.swing.filechooser.FileNameExtensionFilter;
 
+/**
+ * 
+ * @author Shahab, Eunice
+ *
+ */
+
 
 public class FileHandling {
 
-	String fileName = null;
-	String line = null;
+	/**
+	 * 
+	 */
+	//String fileName = null;
 	
 	
+	/**
+	 * This function has a file chooser to choose a CSV file to read shapes from it, then it fills shapes array list with those shapes
+	 */
 	public void ReadFile(){
-		fileName = "E:/GEOMATICS MASTERS-HSKA/WS 2017-18/Software Engineering/Exercises/Drawing/src/ShapeCoordinates.csv";
+		//fileName = "E:/GEOMATICS MASTERS-HSKA/WS 2017-18/Software Engineering/Exercises/Drawing/src/ShapeCoordinates.csv";
+		String line = null;
 		String [] coords;
 		String [] color;
+		
 	//setup file CHOOSER
 	//creates a jFileChooser
 		JFileChooser  fileChooser = new JFileChooser();
@@ -108,6 +116,9 @@ public class FileHandling {
 	      }
 		
 	}
+	/**
+	 * This function iterates through the shapes array list to retrieve all the shapes/objects and stores them in a file.
+	 */
 	public void WriteFile(){
 		
 		//creates a jFileChooser

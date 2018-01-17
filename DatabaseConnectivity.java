@@ -1,8 +1,3 @@
-/**
- * 
- */
-package gisObject;
-
 import java.util.ArrayList;
 
 import java.awt.Color;
@@ -19,15 +14,32 @@ import java.sql.*;
  *
  */
 public class DatabaseConnectivity {
-
-	String host="jdbc:postgresql://127.0.0.1:5432/java_db";
-	String name="postgres";
-	String password="postgres";
 	
+	/**
+	 * it is used to store the host where the database is hosted e.g. localhost
+	 */
+	String host="jdbc:postgresql://127.0.0.1:5432/java_db";
+	/**
+	 * it stores the User name of the database
+	 */
+	String name="postgres";
+	/**
+	 * it stores the password to connect to the database
+	 */
+	String password="postgres";
+	/**
+	 * The Connection object to store the connection retrieved by DriverManager
+	 */
 	Connection con = null;
+	/**
+	 * It is used to create a prepared Statement for INSERT shapes to database table
+	 */
 	PreparedStatement stm = null;
+	/**
+	 * It is used to create a statement object to SELECT shapes from database table
+	 */
 	Statement st = null;
-	int poly_count = 0 , rect_count=0 , line_count=0 , point_count=0 ;
+	
 	
 	
 	/**
@@ -43,8 +55,8 @@ public class DatabaseConnectivity {
 	}
 	
 	/**
-	 * 
-	 * @return testConnection() function tests the connection with the provided credentials and returns true if connection established otherwise returns false
+	 * testConnection() function tests the connection with the provided credentials
+	 * @return returns true if connection established otherwise returns false
 	 */
 	public boolean testConnection(){
 		try{
@@ -59,13 +71,11 @@ public class DatabaseConnectivity {
 		}
 	}
 	
-	
 	/**
-	 * @author Shahab
-	 * 
+	 * saveToDb() function reads all the shapes from the shapes array list and saves them in their respective tables in the database
 	 */
 	public void saveToDb(){
-		
+		int poly_count = 0 , rect_count=0 , line_count=0 , point_count=0 ;
 		if(!testConnection()){
 			return;
 		}
@@ -342,6 +352,11 @@ public class DatabaseConnectivity {
 		point_count=0;
 		
 	}
+	
+	
+	/**
+	 * The function loadDb() is used to retrieve all the shapes from their respective table in the database, and store them in shapes array list
+	 */
 	public void loadDb(){
 		
 		if(!testConnection()){

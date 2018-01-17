@@ -131,7 +131,7 @@ public class MyPanel extends JPanel {
 					startDrag_rect = new Point(x,y);
 				}
 				else if (ShapeDrawing.selected_button == 10){     
-					Color old_color= null;
+
 					pt = new Point(e.getX(),e.getY());
 
 					for (ShapeItems item : shapes) {              //This is for changing the color and not to be used here in this block
@@ -184,7 +184,7 @@ public class MyPanel extends JPanel {
 					
 					//MyRectangle rect = new MyRectangle(x,y,dx,dy);
 					//Shape r = rect.makeRectangle();
-					Shape r = new Rectangle(Math.min(x, dx), Math.min(y, dy), Math.abs(x - dx), Math.abs(y - dy));
+					Shape r = new Rectangle2D.Double(Math.min(x, dx), Math.min(y, dy), Math.abs(x - dx), Math.abs(y - dy));
 					shapes.add(new ShapeItems("rectangle", r,default_Color));
 					//rectangles.add( r);
 					//addRectangle(rect);
@@ -197,7 +197,7 @@ public class MyPanel extends JPanel {
 					this.dy = e.getY();
 					//MyRectangle rect = new MyRectangle(x,y,dx,dy);
 					//r = rect.makeRectangle();
-					range = new Rectangle(Math.min(x, dx), Math.min(y, dy), Math.abs(x - dx), Math.abs(y - dy));
+					range = new Rectangle2D.Double(Math.min(x, dx), Math.min(y, dy), Math.abs(x - dx), Math.abs(y - dy));
 					
 					selected_shapes.clear();
 					repaint();
@@ -246,7 +246,7 @@ public class MyPanel extends JPanel {
 	      });
 	}
 
-	/*private void paintBackground(Graphics2D g2){
+	private void paintBackground(Graphics2D g2){
 	      
 	      
 	      for (int i = 0; i < getSize().width; i += 10) {
@@ -260,7 +260,7 @@ public class MyPanel extends JPanel {
 	      }
 
 	      
-	}*/
+	}
 	
 	/**
 	 * Clears the display by clearing all the lists containing shapes/objects and by calling the repaint() method.
@@ -441,64 +441,23 @@ public class MyPanel extends JPanel {
 	 * paint() method is where all the painting code is placed e.g. drawing and filling of shapes/objects based upon their colors
 	 */
 	public void paint(Graphics g){
-		Graphics2D g2 = (Graphics2D) g;
+		
 		Graphics2D g1 = (Graphics2D) g;  //for rendering of selected objects
+		super.paintComponent(g1);
 		
-		g2.setPaint(Color.LIGHT_GRAY);
-	      g2.setRenderingHint(RenderingHints.KEY_ANTIALIASING, RenderingHints.VALUE_ANTIALIAS_ON);
-	     // paintBackground(g2);
-	      
-	      Color[] colors = { Color.YELLOW, Color.MAGENTA, Color.CYAN , Color.RED, Color.BLUE, Color.PINK};
-	      int colorIndex = 0;
+		g1.setPaint(Color.LIGHT_GRAY);
+	    g1.setRenderingHint(RenderingHints.KEY_ANTIALIASING, RenderingHints.VALUE_ANTIALIAS_ON);
+	    g1.setStroke(new BasicStroke(1));
+	    //g1.setComposite(AlphaComposite.getInstance(AlphaComposite.SRC_OVER, 0.4f));
+	    //paintBackground(g1);
 
-	      g2.setStroke(new BasicStroke(1));
-	      //g2.setComposite(AlphaComposite.getInstance(AlphaComposite.SRC_OVER, 0.50f));
-		
+	    
+	    //g1.setComposite(AlphaComposite.getInstance(AlphaComposite.SRC_OVER, 0.2f));
 		//System.out.println("in paint method");
+	    Graphics2D g2 = (Graphics2D) g;
 		super.paintComponent(g2);
-		
-		//g.setColor(Color.cyan);
-		//g.fillOval(60, 50, 10, 10);
-		
-		
-		/*for (Point p : points){
-			//Point2D pt = new Point(60,50);
-			g2.setPaint(Color.RED);
-			//r.drawPerfectRect(g2);
-			g2.fillOval(p.x,p.y,10,10);
-		}
-		
-		for (Shape l : lines){
-			//Point2D pt = new Point(60,50);
-			g2.setPaint(Color.RED);
-			//r.drawPerfectRect(g2);
-			g2.draw(l);
-		}
-		
-		for (Shape r : rectangles){
-			
-			if (pt!=null && r.contains(pt)){
-				g1.setPaint(Color.CYAN);
-				//r.drawPerfectRect(g2);
-				g1.setStroke(new BasicStroke(3));
-				g1.draw(r);
-				//System.out.println("Contains");
-				//g1.dispose();
-				g1.setStroke(new BasicStroke(1));
-			}
-			else{
-				g2.setPaint(Color.BLACK);
-				//r.drawPerfectRect(g2);
-				g2.draw(r);
-			}
-		}
-		for (Shape shape : polygons) {
-        	g2.setColor(Color.BLACK);
-            g2.draw(shape);
-        }*/
-		
-		
-		
+		g2.setStroke(new BasicStroke(2));
+		g2.setColor(Color.BLACK);
 		for (ShapeItems s : shapes){
 			if (s.getName().equals("point")){
 				if (pt!=null && s.getPoint().distance(pt)<6){
@@ -586,6 +545,7 @@ public class MyPanel extends JPanel {
 		
         
 		g2.dispose();
+		g1.dispose();
 
 	}
 	

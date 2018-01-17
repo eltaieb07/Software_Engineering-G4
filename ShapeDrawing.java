@@ -123,7 +123,7 @@ public class ShapeDrawing extends JFrame{
 
 		p =  new JPanel();
 
-		p.setBounds(0, 50, 200, 642);
+		p.setBounds(0, 50, 200, 900);
 
 		p2 = new JPanel();
 
@@ -215,9 +215,9 @@ public class ShapeDrawing extends JFrame{
 
         polygonNode.add(ColorChooserPolyNodeF);
         
-        UIManager.put("Tree.leafIcon", new ImageIcon("..\\Drawing\\icons\\color.png"));
-	    UIManager.put("Tree.openIcon", new ImageIcon("..\\Drawing\\icons\\collapse.png"));
-	    UIManager.put("Tree.closedIcon", new ImageIcon("..\\Drawing\\icons\\expand.png"));
+        UIManager.put("Tree.leafIcon", new ImageIcon("..\\SoftwareEngg_Project_G4\\icons\\color.png"));
+	    UIManager.put("Tree.openIcon", new ImageIcon("..\\SoftwareEngg_Project_G4\\icons\\collapse.png"));
+	    UIManager.put("Tree.closedIcon", new ImageIcon("..\\SoftwareEngg_Project_G4\\icons\\expand.png"));
 
 
         tree = new JTree(objectsRoot);
@@ -336,11 +336,11 @@ public class ShapeDrawing extends JFrame{
 
 		open.setBounds(7, 7, 35, 35);
 
-		ImageIcon icon_open = new ImageIcon("..\\Drawing\\icons\\open_file.png");
+		ImageIcon icon_open = new ImageIcon("..\\SoftwareEngg_Project_G4\\icons\\loadfromdatabsenew.png");
 
 		open.setIcon(icon_open);
 
-		open.setToolTipText("Load File");
+		open.setToolTipText("Load from Database");
 
 		open.addActionListener(ac);
 
@@ -352,11 +352,11 @@ public class ShapeDrawing extends JFrame{
 
 		save.setBounds(50, 7, 35, 35);
 
-		ImageIcon icon_save = new ImageIcon("..\\Drawing\\icons\\save_to_file.png");
+		ImageIcon icon_save = new ImageIcon("..\\SoftwareEngg_Project_G4\\icons\\savetodatabasenew.png");
 
 		save.setIcon(icon_save);
 
-		save.setToolTipText("Save to File");
+		save.setToolTipText("Save to Database");
 
 		save.addActionListener(ac);
 
@@ -368,7 +368,7 @@ public class ShapeDrawing extends JFrame{
 
 		start_edit.setBounds(100, 7, 35, 35);
 
-		ImageIcon icon_edit = new ImageIcon("..\\Drawing\\icons\\Edit.jpg");
+		ImageIcon icon_edit = new ImageIcon("..\\SoftwareEngg_Project_G4\\icons\\Edit.jpg");
 
 		start_edit.setIcon(icon_edit);
 
@@ -386,7 +386,7 @@ public class ShapeDrawing extends JFrame{
 
 		point.setBackground(Color.WHITE);
 
-		ImageIcon icon_point = new ImageIcon("..\\Drawing\\icons\\Point.png");
+		ImageIcon icon_point = new ImageIcon("..\\SoftwareEngg_Project_G4\\icons\\Point.png");
 
 		point.setIcon(icon_point);
 
@@ -406,7 +406,7 @@ public class ShapeDrawing extends JFrame{
 
 		line.setBackground(Color.WHITE);
 
-		ImageIcon icon_line = new ImageIcon("..\\Drawing\\icons\\Line.png");
+		ImageIcon icon_line = new ImageIcon("..\\SoftwareEngg_Project_G4\\icons\\Line.png");
 
 		line.setIcon(icon_line);
 
@@ -426,7 +426,7 @@ public class ShapeDrawing extends JFrame{
 
 		rectangle.setBackground(Color.WHITE);
 
-		ImageIcon icon_rect = new ImageIcon("..\\Drawing\\icons\\Rectangle.png");
+		ImageIcon icon_rect = new ImageIcon("..\\SoftwareEngg_Project_G4\\icons\\Rectangle.png");
 
 		rectangle.setIcon(icon_rect);
 
@@ -446,7 +446,7 @@ public class ShapeDrawing extends JFrame{
 
 		polygon.setBackground(Color.WHITE);
 
-		ImageIcon icon_poly = new ImageIcon("..\\Drawing\\icons\\Polygon.png");
+		ImageIcon icon_poly = new ImageIcon("..\\SoftwareEngg_Project_G4\\icons\\Polygon.png");
 
 		polygon.setIcon(icon_poly);
 
@@ -466,7 +466,7 @@ public class ShapeDrawing extends JFrame{
 
 		clear.setBackground(Color.WHITE);
 
-		ImageIcon icon_clear = new ImageIcon("..\\Drawing\\icons\\Clear.png");
+		ImageIcon icon_clear = new ImageIcon("..\\SoftwareEngg_Project_G4\\icons\\Clear.png");
 
 		clear.setIcon(icon_clear);
 
@@ -484,7 +484,7 @@ public class ShapeDrawing extends JFrame{
 
 		select.setBackground(Color.WHITE);
 
-		ImageIcon icon_select = new ImageIcon("..\\Drawing\\icons\\select.jpg");
+		ImageIcon icon_select = new ImageIcon("..\\SoftwareEngg_Project_G4\\icons\\select.jpg");
 
 		select.setIcon(icon_select);
 
@@ -506,7 +506,7 @@ public class ShapeDrawing extends JFrame{
 
 		moveUp.setBackground(Color.WHITE);
 
-		ImageIcon icon_moveUp = new ImageIcon("..\\Drawing\\icons\\up.jpg");
+		ImageIcon icon_moveUp = new ImageIcon("..\\SoftwareEngg_Project_G4\\icons\\up.jpg");
 
 		moveUp.setIcon(icon_moveUp);
 
@@ -524,7 +524,7 @@ public class ShapeDrawing extends JFrame{
 
 		moveDown.setBackground(Color.WHITE);
 
-		ImageIcon icon_moveDown = new ImageIcon("..\\Drawing\\icons\\down.jpg");
+		ImageIcon icon_moveDown = new ImageIcon("..\\SoftwareEngg_Project_G4\\icons\\down.jpg");
 
 		moveDown.setIcon(icon_moveDown);
 
@@ -542,7 +542,7 @@ public class ShapeDrawing extends JFrame{
 
 		moveRight.setBackground(Color.WHITE);
 
-		ImageIcon icon_moveRight = new ImageIcon("..\\Drawing\\icons\\right.jpg");
+		ImageIcon icon_moveRight = new ImageIcon("..\\SoftwareEngg_Project_G4\\icons\\right.jpg");
 
 		moveRight.setIcon(icon_moveRight);
 
@@ -560,7 +560,7 @@ public class ShapeDrawing extends JFrame{
 
 		moveLeft.setBackground(Color.WHITE);
 
-		ImageIcon icon_moveLeft = new ImageIcon("..\\Drawing\\icons\\left.jpg");
+		ImageIcon icon_moveLeft = new ImageIcon("..\\SoftwareEngg_Project_G4\\icons\\left.jpg");
 
 		moveLeft.setIcon(icon_moveLeft);
 
@@ -576,7 +576,7 @@ public class ShapeDrawing extends JFrame{
 
 	    delete.setBackground(Color.WHITE);
 
-		ImageIcon icon_delete = new ImageIcon("..\\Drawing\\icons\\delete.png");
+		ImageIcon icon_delete = new ImageIcon("..\\SoftwareEngg_Project_G4\\icons\\delete.png");
 
 		delete.setIcon(icon_delete);
 
@@ -594,7 +594,7 @@ public class ShapeDrawing extends JFrame{
 
 	    range_query.setBackground(Color.WHITE);
 
-		ImageIcon icon_range_query = new ImageIcon("..\\Drawing\\icons\\range_query.png");
+		ImageIcon icon_range_query = new ImageIcon("..\\SoftwareEngg_Project_G4\\icons\\selectmultipleobjects.png");
 
 		range_query.setIcon(icon_range_query);
 
@@ -626,7 +626,7 @@ public class ShapeDrawing extends JFrame{
 
 	     db_conn.setBackground(Color.WHITE);
 
-	     db_conn.setIcon(new ImageIcon("..\\Drawing\\icons\\db_connection.png"));
+	     db_conn.setIcon(new ImageIcon("..\\SoftwareEngg_Project_G4\\icons\\database_connectivity.png"));
 
 	     db_conn.setToolTipText("Database Connectivity");
 
@@ -1298,7 +1298,7 @@ public class ShapeDrawing extends JFrame{
 }*/
 
 
-	//ImageIcon icon_open = new ImageIcon("..\\Drawing\\icons\\open_file.png");
+	//ImageIcon icon_open = new ImageIcon("..\\SoftwareEngg_Project_G4\\icons\\open_file.png");
 
 
 
