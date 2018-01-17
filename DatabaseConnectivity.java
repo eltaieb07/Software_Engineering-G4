@@ -1,3 +1,8 @@
+/**
+ * 
+ */
+package gisObject;
+
 import java.util.ArrayList;
 
 import java.awt.Color;
@@ -490,5 +495,3 @@ public class DatabaseConnectivity {
 	}
 	
 }
-
-

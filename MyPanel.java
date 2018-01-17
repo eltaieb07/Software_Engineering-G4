@@ -1,3 +1,8 @@
+/**
+ * 
+ */
+package gisObject;
+
 import java.util.*;
 import java.util.List;
 
@@ -32,7 +37,7 @@ public class MyPanel extends JPanel {
 	Point pt = null;   // point for selection
 	ShapeItems selected = null;
 	Color default_Color = Color.BLACK;
-	Shape r;
+	Shape range;
 	
 	public MyPanel(){
 	
@@ -140,8 +145,9 @@ public class MyPanel extends JPanel {
 					this.dx = e.getX();
 					this.dy = e.getY();
 					
-					MyRectangle rect = new MyRectangle(x,y,dx,dy);
-					Shape r = rect.makeRectangle();//new Rectangle(Math.min(x, dx), Math.min(y, dy), Math.abs(x - dx), Math.abs(y - dy));
+					//MyRectangle rect = new MyRectangle(x,y,dx,dy);
+					//Shape r = rect.makeRectangle();
+					Shape r = new Rectangle2D.Double(Math.min(x, dx), Math.min(y, dy), Math.abs(x - dx), Math.abs(y - dy));
 					shapes.add(new ShapeItems("rectangle", r,default_Color));
 					//rectangles.add( r);
 					//addRectangle(rect);
@@ -152,16 +158,17 @@ public class MyPanel extends JPanel {
 				else if(ShapeDrawing.current_shape ==5){   // for range query 
 					this.dx = e.getX();
 					this.dy = e.getY();
-					MyRectangle rect = new MyRectangle(x,y,dx,dy);
-					r = rect.makeRectangle();
-					
+					//MyRectangle rect = new MyRectangle(x,y,dx,dy);
+					//r = rect.makeRectangle();
+					range = new Rectangle2D.Double(Math.min(x, dx), Math.min(y, dy), Math.abs(x - dx), Math.abs(y - dy));
 					selected_shapes.clear();
 					repaint();
 					
 					for (ShapeItems item : shapes){
 						if (item.getName().equals("point")){
-							if (r.contains(item.getPoint())){
+							if (range.contains(item.getPoint())){
 								selected_shapes.add(item);
+
 							}
 						}
 						
@@ -228,7 +235,7 @@ public class MyPanel extends JPanel {
 		polygons.clear();
 		shapes.clear();
 		selected_shapes.clear();
-		r=null;
+		range=null;
 
 		repaint();
 	}
@@ -516,9 +523,9 @@ public class MyPanel extends JPanel {
             }
         }	
  
-        if (r!=null){
+        if (range!=null){
         	g2.setColor(Color.BLACK);
-            g2.fill(r);
+            g2.fill(range);
             for (ShapeItems s : selected_shapes){
     			g2.setPaint(Color.CYAN);
     			g2.fillOval(s.getPoint().x,s.getPoint().y ,10,10);

@@ -1,3 +1,8 @@
+/**
+ * 
+ */
+package gisObject;
+
 import javax.swing.*;
 
 import javax.swing.border.EtchedBorder;
@@ -1286,21 +1291,16 @@ public class ShapeDrawing extends JFrame{
 	        return this;
 	}}*/
 /*	private class TreeRenderer extends DefaultTreeCellRenderer {
-
 		 @Override
 		    public Component getTreeCellRendererComponent(JTree tree, Object value,
 		            boolean selected, boolean expanded, boolean leaf, int row,
 		            boolean hasFocus) {
-
 		        super.getTreeCellRendererComponent(tree, value, selected, expanded,
 		                leaf, row, hasFocus);
-
 		        Object pointNode = ((DefaultMutableTreeNode) value).getUserObject();
-
 		        if (pointNode instanceof ReportTemplate) {
 		            setIcon(((ReportTemplate) pointNode).getIcon());
 		        }
-
 		        return this;
 		    } 
 	 
