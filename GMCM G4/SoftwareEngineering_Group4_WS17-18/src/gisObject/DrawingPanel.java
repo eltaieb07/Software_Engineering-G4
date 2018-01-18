@@ -247,12 +247,11 @@ public class DrawingPanel extends JPanel {
 	 * Deletes the selected object by matching it with the one in the list containing all shapes.
 	 */
 	public void delete(){
-		for (Iterator<ShapeItems> iter = shapes.iterator() ; iter.hasNext();){
-			if (selected!=null && iter.next().equals(selected)){
-				iter.remove();
+		for (ShapeItems item : shapes) {
+			if (selected!=null && item.equals(selected)) {
+				shapes.remove(item);
 				break;
 			}
-			iter.next();
 		}
 		repaint();
 	}
@@ -417,14 +416,14 @@ public class DrawingPanel extends JPanel {
 				g2.setPaint(Color.CYAN);
 				g2.setStroke(new BasicStroke(3));
 				g2.draw(s.getShape());
-				g2.setStroke(new BasicStroke(1));
+				g2.setStroke(new BasicStroke(2));
 			}
 			else if (pt!=null && s.getName().equals("line")){
 				if (((Line2D.Double) s.getShape()).ptLineDist(pt)<5){
 					g2.setPaint(Color.CYAN);
 					g2.setStroke(new BasicStroke(3));
 					g2.draw(s.getShape());
-					g2.setStroke(new BasicStroke(1));
+					g2.setStroke(new BasicStroke(2));
 				}
 				else{
 					g2.setColor(s.getColor());
